@@ -1,7 +1,7 @@
 export interface Todo {
-    id: number;
-    description: string;
-    status: TodoStatus;
+    id?: number;
+    description?: string;
+    status?: TodoStatus;
 }
 
 export enum TodoStatus {
