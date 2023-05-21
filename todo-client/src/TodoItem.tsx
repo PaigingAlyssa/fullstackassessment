@@ -52,6 +52,13 @@ const TodoItem = (props: {todo: Todo}) => {
         })
     }
 
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === 'Enter') {
+            event.currentTarget.blur();
+            setIsEditing(false);
+        }
+    };
+
     const handleToggleComplete = () => {
         updateMutation.mutate({
             ...todo,
@@ -77,6 +84,7 @@ const TodoItem = (props: {todo: Todo}) => {
                 onChange={handleDescriptionChange}
                 onClick={handleInputClick}
                 onMouseDown={handleMouseDown}
+                onKeyDown={handleKeyDown}
             />
             <button
                 className="invisible group-hover:visible mx-4 px-4 rounded-full text-slate-400 bg-rose-500"
