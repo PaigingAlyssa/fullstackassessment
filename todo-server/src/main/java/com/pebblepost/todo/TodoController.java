@@ -1,5 +1,6 @@
 package com.pebblepost.todo;
 
+import javassist.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController()
 @RequestMapping("/todos")
@@ -26,28 +28,28 @@ public class TodoController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public TodoDto create(@RequestBody TodoDto createDto) {
-        return null; // TODO
+        final Todo newTodo = this.todoService.createTodo(TodoDto.toEntity(createDto));
+        return TodoDto.fromEntity(newTodo);
     }
 
     @GetMapping
     public List<TodoDto> getAll() {
-        return null; // TODO
+        return this.todoService.getTodos().stream().map(todo -> TodoDto.fromEntity(todo)).collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
-    public TodoDto getOne(@PathVariable("id") Long id) {
-        return null; // TODO
+    public TodoDto getOne(@PathVariable("id") Long id) throws NotFoundException {
+        return TodoDto.fromEntity(this.todoService.getTodo(id));
     }
 
     @PutMapping("/{id}")
     @ResponseStatus(value = HttpStatus.OK)
-    public TodoDto put(@PathVariable("id") Long id, @RequestBody TodoDto updated) {
-        return null; // TODO
+    public TodoDto put(@PathVariable("id") Long id, @RequestBody TodoDto updated) throws NotFoundException {
+        return TodoDto.fromEntity(this.todoService.updateTodo(id, TodoDto.toEntity(updated)));
     }
 
     @DeleteMapping(value = "/{id}")
     public void delete(@PathVariable("id") Long id) {
-        // TODO
+        this.todoService.deleteTodo(id);
     }
-
 }

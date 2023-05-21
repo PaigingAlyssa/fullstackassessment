@@ -4,6 +4,7 @@ import javassist.NotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TodoService {
@@ -15,23 +16,29 @@ public class TodoService {
     }
 
     Todo createTodo(Todo newTodo) {
-        return null; // TODO
+        return this.todoRepository.save(newTodo);
     }
 
     public List<Todo> getTodos() {
-        return null; // TODO
+        return this.todoRepository.findAll();
     }
 
     public Todo getTodo(Long id) throws NotFoundException {
-        return null; // TODO
+        final Optional<Todo> byId = this.todoRepository.findById(id);
+        if(byId.isEmpty()){
+            throw new NotFoundException("Unable to find todo by id: " + id);
+        }
+        return byId.get();
     }
 
-    public Todo updateTodo(Long id, Todo updatedTodo) {
-        return null; // TODO
+    public Todo updateTodo(Long id, Todo updatedTodo) throws NotFoundException {
+        final Todo todo = this.getTodo(id);
+        todo.setDescription(updatedTodo.getDescription());
+        todo.setStatus(updatedTodo.getStatus());
+        return this.todoRepository.save(todo);
     }
 
     public void deleteTodo(Long id) {
-        // TODO
+        this.todoRepository.deleteById(id);
     }
-
 }
