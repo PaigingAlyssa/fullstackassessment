@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,14 +39,22 @@ public class TodoController {
     }
 
     @GetMapping("/{id}")
-    public TodoDto getOne(@PathVariable("id") Long id) throws NotFoundException {
-        return TodoDto.fromEntity(this.todoService.getTodo(id));
+    public TodoDto getOne(@PathVariable("id") Long id) {
+        try {
+            return TodoDto.fromEntity(this.todoService.getTodo(id));
+        } catch (NotFoundException e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
     }
 
     @PutMapping("/{id}")
     @ResponseStatus(value = HttpStatus.OK)
-    public TodoDto put(@PathVariable("id") Long id, @RequestBody TodoDto updated) throws NotFoundException {
-        return TodoDto.fromEntity(this.todoService.updateTodo(id, TodoDto.toEntity(updated)));
+    public TodoDto put(@PathVariable("id") Long id, @RequestBody TodoDto updated) {
+        try {
+            return TodoDto.fromEntity(this.todoService.updateTodo(id, TodoDto.toEntity(updated)));
+        } catch (NotFoundException e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
     }
 
     @DeleteMapping(value = "/{id}")
