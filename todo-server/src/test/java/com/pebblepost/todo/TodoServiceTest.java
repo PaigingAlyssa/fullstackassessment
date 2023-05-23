@@ -66,8 +66,9 @@ class TodoServiceTest {
     @Test
     void getTodo_NotFoundException() throws NotFoundException {
         given(this.todoRepository.findById(1L)).willReturn(Optional.ofNullable(null));
-        verify(todoRepository, times(1)).findById(1L);
+
         assertThrows(NotFoundException.class, () -> todoService.getTodo(1L));
+        verify(todoRepository, times(1)).findById(1L);
     }
     @Test
     void updateTodo() throws NotFoundException {
