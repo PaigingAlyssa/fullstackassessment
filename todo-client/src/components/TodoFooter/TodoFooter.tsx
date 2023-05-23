@@ -1,5 +1,5 @@
 import React from "react";
-import {Todo} from "./Todo";
+import {Todo} from "../../models/Todo/Todo";
 
 const TodoFooter = (props: {todos: Todo[]}) => {
     const {todos} = props;

@@ -1,9 +1,15 @@
 import React from 'react';
+import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react';
 import App from './App';
+import {QueryClient, QueryClientProvider} from "react-query";
 
-test('renders learn react link', () => {
-  render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+describe('App', () => {
+  const queryClient = new QueryClient();
+
+  it('renders without crashing', () => {
+    render(<QueryClientProvider client={queryClient}> <App/> </QueryClientProvider>);
+    expect(screen.getByRole('heading', { name: 'todos'})).toBeInTheDocument();
+  });
+
 });

@@ -1,34 +1,17 @@
 import React from "react";
 import {CheckCircleIcon} from '@heroicons/react/24/solid'
 import {ExclamationCircleIcon} from '@heroicons/react/24/solid'
-import {Todo, TodoStatus} from "./Todo";
-import {useMutation, useQueryClient} from "react-query";
-import {deleteTodo, updateTodo} from "./TodosApi";
+import {Todo, TodoStatus} from "../../models/Todo/Todo";
+import { useDeleteTodo } from "../../hooks/useDeleteTodo";
+import { useUpdateTodo } from "../../hooks/useUpdateTodo";
 
 const TodoItem = (props: {todo: Todo}) => {
     const {todo} = props;
     const [isEditing, setIsEditing] = React.useState(false);
     const doneClassNames = todo.status === TodoStatus.COMPLETE ? "line-through text-gray-400" : "";
-    const queryClient = useQueryClient();
+    const {mutate: updateTodo} = useUpdateTodo();
+    const {mutate: deleteTodo} = useDeleteTodo();
 
-    const updateMutation = useMutation(updateTodo, {
-        onSuccess: (updatedTodo: Todo) => {
-            queryClient.setQueriesData(['todos'], (oldTodos: Todo[] | undefined) => {
-                if(!oldTodos) return [updatedTodo];
-                const index = oldTodos.findIndex(todo => todo.id === updatedTodo.id);
-                oldTodos[index] = updatedTodo;
-                return oldTodos;
-            })
-        }
-    })
-
-    const deleteMutation = useMutation(deleteTodo, {
-        onSuccess: (deletedTodo: Todo) => {
-            queryClient.setQueriesData(['todos'], (oldTodos: Todo[] | undefined) => {
-                return oldTodos ? oldTodos.filter(todo => todo.id !== deletedTodo.id) : [];
-            })
-        }
-    })
     const handleMouseDown = (event: React.MouseEvent<HTMLInputElement>) => {
         if(!isEditing){
             event.preventDefault();
@@ -46,10 +29,7 @@ const TodoItem = (props: {todo: Todo}) => {
     //It would be a good idea to debounce this since every character input is going to trigger a network call
     const handleDescriptionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const description = event.currentTarget.value;
-        updateMutation.mutate({
-            ...todo,
-            description
-        })
+        updateTodo({...todo, description});
     }
 
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -60,22 +40,31 @@ const TodoItem = (props: {todo: Todo}) => {
     };
 
     const handleToggleComplete = () => {
-        updateMutation.mutate({
-            ...todo,
-            status: todo.status === TodoStatus.COMPLETE ? TodoStatus.INCOMPLETE : TodoStatus.COMPLETE
-        });
+        updateTodo({...todo, status: todo.status === TodoStatus.COMPLETE ? TodoStatus.INCOMPLETE : TodoStatus.COMPLETE});
     }
 
     const handleDelete = () => {
-        deleteMutation.mutate(todo);
+        deleteTodo(todo);
     }
 
     return(
-        <div className="flex items-center h-16 w-full bg-white border-b-2 group">
+        <div
+            className="flex items-center h-16 w-full bg-white border-b-2 group"
+            data-testid="todo-item"
+        >
             {todo.status === TodoStatus.COMPLETE &&
-                <CheckCircleIcon onClick={handleToggleComplete} className="fill-rose-200 h-12 w-12 ml-4"/>}
+                <CheckCircleIcon
+                    onClick={handleToggleComplete}
+                    className="fill-rose-200 h-12 w-12 ml-4"
+                    data-testid="todo-complete-icon"
+                />
+            }
             {todo.status === TodoStatus.INCOMPLETE &&
-                <ExclamationCircleIcon onClick={handleToggleComplete} className="fill-gray-200 h-12 w-12 ml-4"/>}
+                <ExclamationCircleIcon
+                    onClick={handleToggleComplete}
+                    className="fill-gray-200 h-12 w-12 ml-4"
+                    data-testid="todo-incomplete-icon"
+                />}
             <input
                 className={`h-full w-full px-4 ${doneClassNames}`}
                 type="text"

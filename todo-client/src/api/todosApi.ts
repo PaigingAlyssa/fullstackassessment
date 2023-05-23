@@ -1,5 +1,5 @@
-import axios from './Http'
-import {Todo} from "./Todo";
+import axios from './http'
+import {Todo} from "../models/Todo/Todo";
 
 const fetchTodos = async () => {
     const { data } = await axios.get('/todos')

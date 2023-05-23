@@ -1,11 +1,9 @@
 import React from 'react';
-import { QueryClient, QueryClientProvider, useQuery } from 'react-query'
-import Header from "./Header";
-import TodoList from "./TodoList";
-import {TodoStatus} from "./Todo";
-import {fetchTodos} from "./TodosApi";
+import Header from "./components/Header/Header";
+import TodoList from "./components/TodoList/TodoList";
+import {useFindAllTodos} from "./hooks/useFindAllTodos";
 function App() {
-    const { data, error, isError, isLoading } = useQuery(['todos'], fetchTodos)
+    const { data, error, isError, isLoading } = useFindAllTodos();
 
     return (
         <div className="h-full min-h-screen w-full min-w-screen bg-slate-100">

@@ -1,22 +1,12 @@
 import React, { useEffect } from "react";
 import { ChevronDownIcon } from '@heroicons/react/24/solid'
-import {useMutation, useQueryClient} from "react-query";
-import {createTodo} from "./TodosApi";
-import {Todo} from "./Todo";
+import { useCreateTodo } from "../../hooks/useCreateTodo";
 
 
-const TodoEntry = () => {
-    const queryClient = useQueryClient();
-    const createMutation = useMutation(createTodo, {
-        onSuccess: (newTodo: Todo) => {
-            queryClient.setQueriesData(['todos'], (oldTodos: Todo[] | undefined) => {
-                return oldTodos ? [...oldTodos, newTodo] : [newTodo];
-            })
-        }
-    })
-
+const TodoHeader = () => {
     const [hasDescription, setHasDescription] = React.useState(false);
     const [description, setDescription] = React.useState('');
+    const createMutation = useCreateTodo();
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setDescription(event.target.value);
     }
@@ -60,4 +50,4 @@ const TodoEntry = () => {
     )
 }
 
-export default TodoEntry;
+export default TodoHeader;
